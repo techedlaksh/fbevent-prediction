@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Overpass+Mono|Roboto');
 
+html, body {
+  background-color: #0d0d0d;
+	color: #fff;
+
+}
 .graph {
     height: 75%;
 }
