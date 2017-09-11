@@ -1,12 +1,18 @@
 'use strict';
+var json;
+d3.json("static/data/donut_data.json", function(error, jsondata){
+  json = jsondata;
+draw("average");
+  
+});
 
 function dataset_colors(cat){
-  if( cat == "art"){
-    var dataset = [1, 1, 1, 1, 1];
+  var arr = [];
+  var dict = json[cat];
+  for (var key in dict) {
+    arr.push(dict[key]);
   }
-  else if (cat == "food"){
-    var dataset = [1, 1, 2, 1, 3];
-  } 
+  var dataset =  arr;
 
 // let colors = ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd'];
 // let colors = ['#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#e0e0e0', '#bababa', '#878787', '#4d4d4d', '#1a1a1a'];
@@ -18,11 +24,50 @@ return combined;
 // ,  '#e6f598', '#abdda4', '#66c2a5', '#3288bd', '#5e4fa2'];
 };
 
+var width = document.querySelector('.graph').offsetWidth;
+var height = document.querySelector('.graph').offsetHeight;
+var minOfWH = Math.min(width, height) / 2;
+var initialAnimDelay = 300;
+var arcAnimDelay = 150;
+var arcAnimDur = 3000;
+var secDur = 1000;
+var secIndividualdelay = 150;
+
+var radius = undefined;
+
+// calculate minimum of width and height to set chart radius
+if (minOfWH > 200) {
+  radius = 200;
+} else {
+  radius = minOfWH;
+}
+
+// append svg
+var svg = d3.select('.graph').append('svg').attr({
+  'width': width,
+  'height': height,
+  'class': 'pieChart'
+}).append('g');
+
+svg.attr({
+  'transform': 'translate(' + width / 2 + ', ' + height / 2 + ')'
+});
+
+// for drawing slices
+var arc = d3.svg.arc().outerRadius(radius * 0.6).innerRadius(radius * 0.45);
+
+// for labels and polylines
+var outerArc = d3.svg.arc().innerRadius(radius * 0.85).outerRadius(radius * 0.85);
+
+// d3 color generator
+// let c10 = d3.scale.category10();
+
+var pie = d3.layout.pie().value(function (d) {
+  return d;
+});
 
 var draw = function draw(cat) {
-
-  
-
+  console.log("Iam in function" + cat);
   var combined = dataset_colors(cat);
   var dataset = combined[0];
   var colors = combined[1];
@@ -34,6 +79,7 @@ var draw = function draw(cat) {
 
   // define slice
   var slice = svg.select('.slices').datum(dataset).selectAll('path').data(pie);
+
   slice.enter().append('path').attr({
     'fill': function fill(d, i) {
       return colors[i];
@@ -64,7 +110,7 @@ var draw = function draw(cat) {
   }).attr('transform', function (d) {
     // calculate outerArc centroid for 'this' slice
     var pos = outerArc.centroid(d);
-    // define left and right alignment of text labels 							
+    // define left and right alignment of text labels               
     pos[0] = radius * (midAngle(d) < Math.PI ? 1 : -1);
     return 'translate(' + pos + ')';
   }).style('text-anchor', function (d) {
@@ -88,24 +134,12 @@ var draw = function draw(cat) {
   });
 };
 
-draw("art");
 
-var button = document.querySelector('button');
-
-function empty(cat){
-  // do nothing
-};
-
-var replay = function(cat) {
-
-  d3.selectAll('.slices').transition().ease('back').duration(100).delay(0).style('opacity', 0).attr('transform', 'translate(0, 250)').remove();
-  d3.selectAll('.lines').transition().ease('back').duration(100).delay(100).style('opacity', 0).attr('transform', 'translate(0, 250)').remove();
-  d3.selectAll('.labels').transition().ease('back').duration(100).delay(200).style('opacity', 0).attr('transform', 'translate(0, 250)').remove();
+function replay(cat) {
   console.log(cat);
-  // draw(cat);
-};
 
-function doublefunction(){
-  draw('food');
-  replay('art');
-}
+  d3.selectAll('.slices').style('opacity', 0).attr('transform', 'translate(0, 250)').remove();
+  d3.selectAll('.lines').style('opacity', 0).attr('transform', 'translate(0, 250)').remove();
+  d3.selectAll('.labels').style('opacity', 0).attr('transform', 'translate(0, 250)').remove();
+  setTimeout(draw(cat), 100);
+};
