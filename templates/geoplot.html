@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block heading %}Geo Plotting{% endblock %}
+
+{% block head %}
+   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+   <script type="text/javascript">
+     var mymapsApiKey = 'AIzaSyDeUbThFc5v9C6sqwVRLk4y5mtl1LOxs5I';
+     google.charts.load('current', {packages: ['geochart'], mapsApiKey: mymapsApiKey});
+   </script>
+   <script type="text/javascript" src="static/data/geo_data.json"></script>
+{% endblock %}
+
+
+<!-- <div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div> -->
+{% block script %}
+<script language="JavaScript">
+function graph(cat) {
+  console.log(cat);
+   // Define the chart to be drawn.
+    var data = google.visualization.arrayToDataTable(geoData[cat]);
+  
+   // Set chart options
+   var options = {
+      showTip: true,
+      displayMode: 'markers',
+      backgroundColor: '#0d0d0d',
+      datalessRegionColor: '#A9A9A9',
+      defaultColor: '#9999ff',
+      magnifyingGlass: {enable: false, zoomFactor: 5.0},
+      markerOpacity: 0.5,
+   };       
+
+   // Instantiate and draw the chart.
+   var chart = new google.visualization.GeoChart(document.getElementById('container'));
+   chart.draw(data, options);
+}
+google.charts.setOnLoadCallback(function() {graph('art')});
+</script>
+{% endblock %}
