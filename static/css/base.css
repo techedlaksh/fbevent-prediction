@@ -17,6 +17,9 @@ html, body {
 .label {
 	font-size: 1.25em;
 	font-family: 'Overpass Mono', monospace;
+	stroke: #fff;
+	fill: #fff;
+	stroke-width: 0.5;
 }
 .label-info {
 	font-size: 0.8125em;
@@ -63,3 +66,4 @@ polyline {
 	position: absolute;
 	padding-left: 20px;
 }
+
