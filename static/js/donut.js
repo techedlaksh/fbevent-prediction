@@ -7,19 +7,26 @@ draw("average");
 });
 
 function dataset_colors(cat){
+  var dataset, combined;
+  var names = ['travel', 'food', 'music', 'art', 'education'];
+  var colors = ['#9e0142', '#d53e4f', '#f46d43', '#fdae61', '#fee08b',];
+  if(cat == 'event_number'){
+    dataset = [204, 221, 222, 225, 171];
+    combined = [dataset, colors, names];
+    return combined
+  }
   var arr = [];
   var dict = json[cat];
-  for (var key in dict) {
-    arr.push(dict[key]);
+  for (var key in names) {
+    arr.push(dict[names[key]]);
   }
-  var dataset =  arr;
+  dataset =  arr;
+  console.log(dataset, names);
 
 // let colors = ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd'];
 // let colors = ['#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#e0e0e0', '#bababa', '#878787', '#4d4d4d', '#1a1a1a'];
-var colors = ['#9e0142', '#d53e4f', '#f46d43', '#fdae61', '#fee08b',];
-var names = ['travel', 'food', 'music', 'art', ' education'];
-var combined = [dataset, colors, names];
-console.log(combined);
+  combined = [dataset, colors, names];
+
 return combined;
 // ,  '#e6f598', '#abdda4', '#66c2a5', '#3288bd', '#5e4fa2'];
 };
@@ -67,12 +74,10 @@ var pie = d3.layout.pie().value(function (d) {
 });
 
 var draw = function draw(cat) {
-  console.log("Iam in function" + cat);
   var combined = dataset_colors(cat);
   var dataset = combined[0];
   var colors = combined[1];
   var names = combined[2];
-  console.log(dataset);
   svg.append("g").attr("class", "lines");
   svg.append("g").attr("class", "slices");
   svg.append("g").attr("class", "labels");
@@ -106,7 +111,7 @@ var draw = function draw(cat) {
   text.enter().append('text').attr('dy', '0.35em').style("opacity", 0).style('fill', function (d, i) {
     return colors[i];
   }).text(function (d, i) {
-    return names[i];
+    return names[i] + ' (' + dataset[i] + ')';
   }).attr('transform', function (d) {
     // calculate outerArc centroid for 'this' slice
     var pos = outerArc.centroid(d);
@@ -136,7 +141,6 @@ var draw = function draw(cat) {
 
 
 function replay(cat) {
-  console.log(cat);
 
   d3.selectAll('.slices').style('opacity', 0).attr('transform', 'translate(0, 250)').remove();
   d3.selectAll('.lines').style('opacity', 0).attr('transform', 'translate(0, 250)').remove();
