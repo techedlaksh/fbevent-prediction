@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block heading %}Interested Count Prediction{% endblock %}
+
+
+{% block content %}
+<center>
+<h2>Please enter the Event ID:</h2>
+
+
+<form method="POST" action="{{ url_for('results') }}">
+  <input type="text" name="eventid" value="" style="color: black">
+  <input type=submit value='Submit Event ID' name='submit_btn' class="btn" style="background-color: grey">
+</form>
+</center>
+  {% endblock %}

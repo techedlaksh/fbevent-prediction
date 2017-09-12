@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block heading %}Predicted Result{% endblock %}
+
+
+{% block content %}
+<div style="margin: 20px">
+<center>
+	<h4>The prediciton is <strong> {{ prediction }} </strong> </h4>
+<button type="button" class="btn btn-success" href="/event">Another Prediction ?</button>
+</center>
+</div>
+  {% endblock %}
