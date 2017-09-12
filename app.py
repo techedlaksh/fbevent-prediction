@@ -1,5 +1,6 @@
 import os
 import json
+import pickle
 
 from flask import Flask, render_template, jsonify
 
@@ -7,6 +8,12 @@ from flask import Flask, render_template, jsonify
 app = Flask(__name__)
 app.secret_key = 's0mth1ng s3cr3t'
 
+
+##### Preparing the Classifier
+rf = pickle.load(open(os.path.join(cur_dir, 'ml_model', 'classifier.pkl'), 'rb'))
+
+def classify(event):
+    return int(rf.predict([event]))
 
 @app.route('/')
 def home():
