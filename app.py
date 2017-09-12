@@ -1,6 +1,7 @@
 import os
 import json
 import pickle
+import facebook
 
 from flask import Flask, render_template, jsonify, request, redirect
 from wtforms import Form, TextAreaField, validators
@@ -15,13 +16,21 @@ app.secret_key = 's0mth1ng s3cr3t'
 cur_dir = os.path.dirname(__file__)
 rf = pickle.load(open(os.path.join(cur_dir, 'ml_model', 'classifier.pkl'), 'rb'))
 
-class EventForm(Form):
-    eventid = TextAreaField('',
-                                [validators.DataRequired(),
-                                validators.length(min=5)])
+token = 'EAAD4wuQJXMQBAOeLbGArkUVA5rlu3VndjMmyBqlc33vTbXAl9uZB4fQqZCj1ByAAjqvHq1vfLx8MZBZAOc3Ll9kaRZAUZATXcDZB2bR2PsZALxfZCfKzvZC1XhBI4gCM2JWI6C5v9uc24mJByxteLGZBUzU7G9HFFYn1VtqCo9BXDz6cgZDZD'
 
-def classify(event):
-    return int(rf.predict([event]))
+
+
+class EventForm(Form):
+    eventid = TextAreaField('', [validators.DataRequired(), validators.length(min=5)])
+
+def classify(eventid):
+    graph = facebook.GraphAPI(access_token=token, version = '2.10')
+    field_events = 'attending_count, can_guests_invite, guest_list_enabled, maybe_count, noreply_count, interested_count'
+    temp_event = graph.get_object(id=eventid, fields=field_events)
+    order_list = ['attending_count', 'can_guests_invite', 'guest_list_enabled', 'maybe_count', 'noreply_count']
+    event = [temp_event[x] for x in order_list]
+    print event
+    return int(rf.predict([event])), int(temp_event['interested_count'])
 
 @app.route('/')
 def home():
@@ -40,8 +49,9 @@ def event():
 def results():
     form = EventForm(request.form)
     if request.method == 'POST' and form.validate():
-        prediction = request.form['eventid']
-        return render_template('results.html', prediction = prediction)
+        eventid = request.form['eventid']
+        prediction, truth = classify(eventid)
+        return render_template('results.html', prediction = prediction, truth = truth)
         # prediction = request.form['name']
     # field = request.form['name']
         # return 'Interested Count is: %s' % prediction
